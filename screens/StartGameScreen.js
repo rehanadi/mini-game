@@ -1,10 +1,39 @@
-import { TextInput, View, StyleSheet } from "react-native";
+import { useState } from "react";
+import { TextInput, View, StyleSheet, Alert } from "react-native";
 import PrimaryButton from "../components/PrimaryButton";
+import Colors from "../constants/colors";
 
-const StartGameScreen = () => {
+const StartGameScreen = ({ onPickNumber }) => {
+  const [enteredNumber, setEnteredNumber] = useState("");
+
+  const numberInputHandler = (value) => {
+    setEnteredNumber(value);
+  };
+
+  const resetInputHandler = () => {
+    setEnteredNumber("");
+  };
+
+  const confirmInputHandler = () => {
+    const chosenNumber = parseInt(enteredNumber);
+
+    if (isNaN(chosenNumber) || chosenNumber <= 0 || chosenNumber > 99) {
+      Alert.alert(
+        "Invalid number!",
+        "Number has to be a number between 1 and 99.",
+        [{ text: "Okay", style: "destructive", onPress: resetInputHandler }]
+      );
+      return;
+    }
+
+    onPickNumber(chosenNumber);
+  };
+
   return (
     <View style={styles.inputContainer}>
       <TextInput
+        value={enteredNumber}
+        onChangeText={numberInputHandler}
         maxLength={2}
         keyboardType="numeric"
         autoCapitalize="none"
@@ -13,12 +42,16 @@ const StartGameScreen = () => {
       />
       <View style={styles.buttonsContainer}>
         <View style={styles.buttonContainer}>
-          <PrimaryButton>
+          <PrimaryButton
+            onPress={resetInputHandler}
+          >
             Reset
           </PrimaryButton>
         </View>
         <View style={styles.buttonContainer}>
-          <PrimaryButton>
+          <PrimaryButton
+            onPress={confirmInputHandler}
+          >
             Confirm
           </PrimaryButton>
         </View>
@@ -33,7 +66,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#3b021f",
+    backgroundColor: Colors.primary800,
     padding: 16,
     borderRadius: 8,
     marginTop: 100,
@@ -49,11 +82,11 @@ const styles = StyleSheet.create({
     height: 50,
     padding: 0,
     borderBottomWidth: 2,
-    borderBottomColor: "#ddb52f",
+    borderBottomColor: Colors.accent500,
     marginVertical: 8,
     fontSize: 32,
     fontWeight: "bold",
-    color: "#ddb52f",
+    color: Colors.accent500,
     textAlign: "center",
   },
   buttonsContainer: {
